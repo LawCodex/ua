@@ -20,8 +20,9 @@ META_DIR = os.path.join(RAW, "meta")
 TXT_DIR = os.path.join(RAW, "txt")
 
 API = "https://data.rada.gov.ua"
-# The API identifies anonymous open-data clients by the "OpenData" token in the User-Agent.
-USER_AGENT = "OpenData LawCodex/1.0 (+https://github.com/LawCodex)"
+# The API identifies anonymous open-data clients by the User-Agent "OpenData"; it must be exactly
+# that string (a descriptive User-Agent such as "OpenData LawCodex/1.0 (...)" is refused with 403).
+USER_AGENT = "OpenData"
 
 # Status codes (dictionary stan.txt)
 STATUS_NAMES = {

@@ -88,6 +88,7 @@ def main():
 
     missing = C.load_json(os.path.join(C.RAW, "missing.json"), {})
     n = 0
+    bad = 0  # consecutive refusals: stop instead of hammering a server that blocks us
     for i, (_, _, d) in enumerate(sel):
         path = C.txt_path(d["nreg"])
         side = path[:-4] + ".json"
@@ -97,7 +98,7 @@ def main():
         if a.limit and n >= a.limit:
             break
         n += 1
-        url = f"{C.API}/laws/show/{quote(d['nreg'], safe='')}.txt"
+        url = f"{C.API}/laws/show/{quote(d['nreg'], safe='/')}.txt"
         hdr = {}
         if meta and meta.get("last_modified") and os.path.exists(path):
             hdr["If-Modified-Since"] = meta["last_modified"]
@@ -119,6 +120,7 @@ def main():
                            "document_date": r.headers.get("DocumentDate"),
                            "retrieved": dt.date.today().isoformat()}, f, ensure_ascii=False)
             missing.pop(d["nreg"], None)
+            bad = 0
             print(f"[{i+1}/{len(sel)}] {d['nreg']} {len(r.content)} B", flush=True)
             charge(len(r.content))
         else:
@@ -127,6 +129,10 @@ def main():
             with open(os.path.join(C.RAW, "missing.json"), "w", encoding="utf-8") as f:
                 json.dump(missing, f, ensure_ascii=False, indent=1)
             charge(len(r.content))
+            bad = bad + 1 if r.status_code != 404 else 0
+            if bad >= 5:
+                print("5 consecutive refusals: stopping", flush=True)
+                break
         pause()
     print("done", flush=True)
 
