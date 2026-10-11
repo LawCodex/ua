@@ -158,9 +158,12 @@ python scripts/ua_fetch.py --refresh
 
 How the scripts follow the API rules:
 
-- They send the User-Agent `OpenData`, the token the API requires for anonymous access. The
-  server refuses (HTTP 403) any other User-Agent, including a descriptive one that contains the
-  token.
+- They send the User-Agent `OpenData`, the access token the API documents for anonymous use. The
+  server refuses (HTTP 403 or a redirect) any other User-Agent, including a descriptive one that
+  contains the token, so the client identifies itself in separate headers instead:
+  `X-Client: LawCodex/1.0 (+https://github.com/LawCodex/ua)` and `From: LawCodex (+...)`.
+- They never follow redirects. A refused request redirects to `zakon.rada.gov.ua`, whose
+  robots.txt closes it to automated clients, so the scripts never fetch from there.
 - They wait a random 5–7 s between requests and use a single connection, as the documentation
   asks.
 - They stay under the 200 MB/day anonymous limit: the downloaded bytes are counted per Kyiv

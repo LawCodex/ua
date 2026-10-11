@@ -24,6 +24,11 @@ API = "https://data.rada.gov.ua"
 # The API identifies anonymous open-data clients by the User-Agent "OpenData"; it must be exactly
 # that string (a descriptive User-Agent such as "OpenData LawCodex/1.0 (...)" is refused with 403).
 USER_AGENT = "OpenData"
+# ... so the client identifies itself in separate headers
+CLIENT_HEADERS = {
+    "X-Client": "LawCodex/1.0 (+https://github.com/LawCodex/ua)",
+    "From": "LawCodex (+https://github.com/LawCodex/ua)",
+}
 
 # Status codes (dictionary stan.txt)
 STATUS_NAMES = {
@@ -64,6 +69,7 @@ def session():
     s = requests.Session()
     s.mount("https://", TLS12Adapter())
     s.headers["User-Agent"] = USER_AGENT
+    s.headers.update(CLIENT_HEADERS)
     return s
 
 
@@ -72,7 +78,8 @@ def get(s, url, headers=None, tries=12, timeout=180):
     last = None
     for i in range(tries):
         try:
-            r = s.get(url, headers=headers or {}, timeout=timeout)
+            # never follow redirects: refusals redirect to zakon.rada.gov.ua, which robots.txt closes to bots
+            r = s.get(url, headers=headers or {}, timeout=timeout, allow_redirects=False)
             if r.status_code in (429,) or r.status_code >= 500:
                 last = f"HTTP {r.status_code}"
                 time.sleep(min(600, 30 * (i + 1)))
