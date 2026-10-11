@@ -81,8 +81,21 @@ def to_markdown_body(text):
     # pass 1: find structural lines, merge headings with their title line
     items = []  # (kind or None, text)
     i = 0
+    in_quote = False  # inside text quoted by an amending provision ("... такого змісту: "Стаття 5. ...")
     while i < len(lines):
         l = lines[i].strip()
+        odd = l.count('"') % 2 == 1 or l.count("«") != l.count("»")
+        if in_quote:
+            if odd:
+                in_quote = False
+            items.append((None, l))
+            i += 1
+            continue
+        if odd and l[:1] in ('"', "«", "“"):
+            in_quote = True
+            items.append((None, l))
+            i += 1
+            continue
         st = structural(l)
         if st:
             kind, label, rest = st
@@ -108,8 +121,11 @@ def to_markdown_body(text):
         items.append((None, l))
         i += 1
     present = [k for k, _ in KINDS if any(it[0] == k for it in items)]
-    level = {k: 2 + n for n, k in enumerate(present)}
-    level["stattia"] = 2 + len(present)
+    # article headings must fit in "######": with more than four levels above the article,
+    # the highest levels share the "##" level
+    off = max(0, len(present) - 4)
+    level = {k: max(2, 2 + n - off) for n, k in enumerate(present)}
+    level["stattia"] = 2 + len(present) - off
     out = []
     for kind, t in items:
         if kind is None:

@@ -4,6 +4,7 @@ Source: open-data API of the Verkhovna Rada legislation database ("Законо�
 documented at https://data.rada.gov.ua/open/main/api/page3 .
 """
 import json
+import sys
 import os
 import re
 import ssl
@@ -79,7 +80,9 @@ def get(s, url, headers=None, tries=12, timeout=180):
             return r
         except requests.RequestException as e:  # TLS drops are frequent: retry
             last = str(e)[-120:]
-            time.sleep(min(120, 5 + 5 * i) + random.uniform(0, 3))
+            print(f"  retry {i+1} {time.strftime('%H:%M:%S')} {type(e).__name__}", file=sys.stderr, flush=True)
+            # connection-level failures never reach the application; retry soon, then back off
+            time.sleep(random.uniform(1, 3) if i < 4 else min(120, 10 * i))
     raise RuntimeError(f"giving up on {url}: {last}")
 
 
