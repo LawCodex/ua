@@ -6,17 +6,17 @@ Verkhovna Rada of Ukraine in its legislation database
 [«Законодавство України»](https://zakon.rada.gov.ua), retrieved through the database's official
 [open-data API](https://data.rada.gov.ua/open/main/api/page3).
 
-Retrieved: **@RETRIEVED@**. Read [Known gaps and limitations](#known-gaps-and-limitations) before
+Retrieved: **2026-10-12 to 2026-10-15 (each file records its own `retrieved` date)**. Read [Known gaps and limitations](#known-gaps-and-limitations) before
 relying on these files.
 
 ## Contents
 
 | Category | Directory | Files |
 |---|---|---:|
-| Constitution (*Конституція України*) | `konstytutsiia/` | @N_CONST@ |
-| Codes (*кодекси*) | `kodeksy/` | @N_CODES@ |
-| Laws (*закони*) | `zakony/<year>/` | @N_LAWS@ |
-| **Total** | | **@N_TOTAL@** |
+| Constitution (*Конституція України*) | `konstytutsiia/` | 1 |
+| Codes (*кодекси*) | `kodeksy/` | 23 |
+| Laws (*закони*) | `zakony/<year>/` | 6,819 |
+| **Total** | | **6,843** |
 
 What is selected (from the document cards of the open-data set
 [«Картки документів»](https://data.rada.gov.ua/open/data/doc)):
@@ -32,6 +32,9 @@ What is selected (from the document cards of the open-data set
   law keeps the status «Чинний» in the database after its changes are merged into the law it
   amends, so these laws are included: their own final and transitional provisions stay in force.
   Laws are grouped by the year of adoption.
+
+By status, the 6,843 files are: 6,809 Чинний, 9 Набирає чинності, 7 Частково набрав чинності,
+7 Втратив чинність крім окремих положень, 5 Дію зупинено and 5 Дію відновлено.
 
 "In force" means one of the database statuses: Чинний (in force), Набирає чинності (entering into
 force), Частково набрав чинності (partly in force), Дію зупинено (suspended), Дію відновлено
@@ -76,14 +79,17 @@ formatting:
 - **Editorial notes stay in the text.** The database's notes in braces (`{Із змінами, внесеними
   згідно із Законом № ...}`, `{Статтю 5 виключено ...}`) are part of the official consolidated
   text and are kept as they are.
-- Documents that the API did not serve are listed in the final report and in the
-  `missing` count below, if any: @MISSING@
+- **The snapshot is not from a single day.** Texts were downloaded one by one over four days at the
+  pace the API requires. An act amended during that window may show the version current on its
+  own `retrieved` date. `last_amended` gives the date of the version reproduced.
+- Every selected document was downloaded. None were missing at the end of the run.
 
 ## Layout and file names
 
 - `konstytutsiia/254k-96-vr-konstytutsiia-ukrainy.md`
 - `kodeksy/<nreg>-<title>.md`, e.g. `kodeksy/435-15-tsyvilnyi-kodeks-ukrainy.md` (Civil Code).
-- `zakony/<year>/<nreg>-<title>.md`, e.g. `zakony/1994/132-94-vr-pro-nadra.md`.
+- `zakony/<year>/<nreg>-<title>.md`, e.g. `zakony/2026/5005-20-pro-vnesennia-zminy-do-zakonu-ukrainy-pro-orendu-...md`.
+  Years run from 1979 to 2026. The largest year directory (2022) holds 384 files.
 
 `<nreg>` is the database's system number of the document (*системний номер*, e.g. `254к/96-вр`,
 `2341-14`, `5005-20`), transliterated to ASCII with `/` replaced by `-`. It is the identifier in
@@ -99,12 +105,12 @@ Ukrainian national system (Cabinet resolution 55/2010), cut to keep names under 
 title: "Про надра"                     # official title (Ukrainian)
 identifier: "132/94-вр"                # system number (nreg) in the database
 number: "132/94-ВР"                    # official number of the act
-dokid: 14520                           # internal document id of the database
+dokid: 18971                           # internal document id of the database
 type: code                             # constitution | code | act
 jurisdiction: ua
 language: uk
 date: 1994-07-27                       # adoption date
-last_amended: 2026-01-01               # date of the consolidated version reproduced
+last_amended: 2025-01-17               # date of the consolidated version reproduced
 status: in_force
 status_detail: "Чинний"                # status in the database
 source: "https://zakon.rada.gov.ua/laws/show/132/94-вр"
